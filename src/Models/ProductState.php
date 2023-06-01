@@ -13,34 +13,59 @@ declare(strict_types=1);
 
 namespace Vanilo\Product\Models;
 
+use Illuminate\Support\Facades\Cache;
 use Konekt\Enum\Enum;
 use Vanilo\Product\Contracts\ProductState as ProductStateContract;
 
 class ProductState extends Enum implements ProductStateContract
 {
-    public const __DEFAULT = self::DRAFT;
+	public const __DEFAULT = self::DRAFT;
 
-    public const DRAFT = 'draft';
-    public const INACTIVE = 'inactive';
-    public const ACTIVE = 'active';
-    public const UNAVAILABLE = 'unavailable';
-    public const RETIRED = 'retired';
+	public const DRAFT = 'draft';
+	public const INACTIVE = 'inactive';
+	public const ACTIVE = 'active';
+	public const UNAVAILABLE = 'unavailable';
+	public const RETIRED = 'retired';
 
-    protected static $activeStates = [self::ACTIVE];
+	protected static $activeStates = [self::ACTIVE];
+	protected static $listStates = [];
 
-    /**
-     * @inheritdoc
-     */
-    public function isActive(): bool
-    {
-        return in_array($this->value, static::$activeStates);
-    }
+	public function __construct($value = null)
+	{
+		parent::__construct($value);
 
-    /**
-     * @inheritdoc
-     */
-    public static function getActiveStates(): array
-    {
-        return static::$activeStates;
-    }
+		static::$listStates = explode(',', Cache::get('settings.products.list-states', self::ACTIVE));
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function isActive(): bool
+	{
+		return in_array($this->value, static::$activeStates);
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public static function getActiveStates(): array
+	{
+		return static::$activeStates;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function isListable(): bool
+	{
+		return in_array($this->value, static::$listStates);
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public static function getListableStates(): array
+	{
+		return static::$listStates;
+	}
 }

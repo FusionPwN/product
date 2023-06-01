@@ -21,73 +21,78 @@ use Vanilo\Product\Contracts\Product as ProductContract;
 
 class Product extends Model implements ProductContract
 {
-    use CastsEnums;
-    use Sluggable;
-    use SluggableScopeHelpers;
+	use CastsEnums;
+	use Sluggable;
+	use SluggableScopeHelpers;
 
-    protected $table = 'products';
+	protected $table = 'products';
 
-    protected $guarded = ['id', 'created_at', 'updated_at'];
+	protected $guarded = ['id', 'created_at', 'updated_at'];
 
-    protected $enums = [
-        'state' => 'ProductStateProxy@enumClass'
-    ];
+	protected $enums = [
+		'state' => 'ProductStateProxy@enumClass'
+	];
 
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'name'
-            ]
-        ];
-    }
+	public function sluggable(): array
+	{
+		return [
+			'slug' => [
+				'source' => 'name'
+			]
+		];
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function isActive(): bool
-    {
-        return $this->state->isActive();
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function isActive(): bool
+	{
+		return $this->state->isActive();
+	}
 
-    /**
-     * @return bool
-     */
-    public function getIsActiveAttribute()
-    {
-        return $this->isActive();
-    }
+	public function isListable(): bool
+	{
+		return $this->state->isListable();
+	}
 
-    public function isOnStock(): bool
-    {
-        return $this->stock > 0;
-    }
+	/**
+	 * @return bool
+	 */
+	public function getIsActiveAttribute()
+	{
+		return $this->isActive();
+	}
 
-    public function title(): string
-    {
-        return $this->ext_title ?? $this->name;
-    }
+	public function isOnStock(): bool
+	{
+		return $this->stock > 0;
+	}
 
-    /**
-     * @return string
-     */
-    public function getTitleAttribute()
-    {
-        return $this->title();
-    }
+	public function title(): string
+	{
+		return $this->ext_title ?? $this->name;
+	}
 
-    /**
-     * Scope for returning the products with active state
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeActives($query)
-    {
-        return $query->whereIn(
-            'state',
-            ProductStateProxy::getActiveStates()
-        );
-    }
+	/**
+	 * @return string
+	 */
+	public function getTitleAttribute()
+	{
+		return $this->title();
+	}
+
+	/**
+	 * Scope for returning the products with active state
+	 *
+	 * @param \Illuminate\Database\Eloquent\Builder $query
+	 *
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeActives($query)
+	{
+		return $query->whereIn(
+			'state',
+			ProductStateProxy::getActiveStates()
+		);
+	}
 }
