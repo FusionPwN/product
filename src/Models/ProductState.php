@@ -30,11 +30,31 @@ class ProductState extends Enum implements ProductStateContract
 	protected static $activeStates = [self::ACTIVE];
 	protected static $listStates = [];
 
+	protected static $visibility = [
+		self::DRAFT			        => true,
+		self::INACTIVE 				=> true,
+		self::ACTIVE				=> true,
+		self::UNAVAILABLE 			=> true,
+		self::RETIRED 			    => true,
+	];
+
 	public function __construct($value = null)
 	{
 		parent::__construct($value);
 
 		static::$listStates = explode(',', Cache::get('settings.products.list-states', self::ACTIVE));
+	}
+
+	public static function choices()
+	{
+		$result = [];
+		$choices = parent::choices();
+		foreach ($choices as $key => $value) {
+			if (self::$visibility[$key]) {
+				$result[$key] = $value;
+			}
+		}
+		return $result;
 	}
 
 	/**
