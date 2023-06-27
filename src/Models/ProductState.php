@@ -27,9 +27,6 @@ class ProductState extends Enum implements ProductStateContract
 	public const UNAVAILABLE = 'unavailable';
 	public const RETIRED = 'retired';
 
-	protected static $activeStates = [self::ACTIVE];
-	protected static $listStates = [];
-
 	protected static $visibility = [
 		self::DRAFT			        => true,
 		self::INACTIVE 				=> true,
@@ -38,10 +35,18 @@ class ProductState extends Enum implements ProductStateContract
 		self::RETIRED 			    => true,
 	];
 
+	protected static $activeStates = [self::ACTIVE];
+	protected static $listStates = [];
+
 	public function __construct($value = null)
 	{
 		parent::__construct($value);
 
+		static::$listStates = explode(',', Cache::get('settings.products.list-states', self::ACTIVE));
+	}
+
+	public static function boot()
+	{
 		static::$listStates = explode(',', Cache::get('settings.products.list-states', self::ACTIVE));
 	}
 
@@ -78,6 +83,7 @@ class ProductState extends Enum implements ProductStateContract
 	 */
 	public function isListable(): bool
 	{
+		self::boot();
 		return in_array($this->value, static::$listStates);
 	}
 
@@ -86,6 +92,7 @@ class ProductState extends Enum implements ProductStateContract
 	 */
 	public static function getListableStates(): array
 	{
+		self::boot();
 		return static::$listStates;
 	}
 }
