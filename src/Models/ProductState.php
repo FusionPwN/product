@@ -95,4 +95,23 @@ class ProductState extends Enum implements ProductStateContract
 		self::boot();
 		return static::$listStates;
 	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public static function getInverseListableStates(): array
+	{
+		self::boot();
+
+		$result = [];
+		$choices = self::choices();
+
+		foreach ($choices as $choice) {
+			if (!in_array($choice, static::$listStates)) {
+				$result[] = $choice;
+			}
+		}
+
+		return $result;
+	}
 }
