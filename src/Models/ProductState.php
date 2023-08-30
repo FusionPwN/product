@@ -19,13 +19,16 @@ use Vanilo\Product\Contracts\ProductState as ProductStateContract;
 
 class ProductState extends Enum implements ProductStateContract
 {
-	public const __DEFAULT = self::DRAFT;
+	const __DEFAULT = self::DRAFT;
 
-	public const DRAFT = 'draft';
-	public const INACTIVE = 'inactive';
-	public const ACTIVE = 'active';
-	public const UNAVAILABLE = 'unavailable';
-	public const RETIRED = 'retired';
+	const DRAFT 		= 'draft';
+	const INACTIVE 		= 'inactive';
+	const ACTIVE 		= 'active';
+	const UNAVAILABLE 	= 'unavailable';
+	const RETIRED 		= 'retired';
+
+	// $labels static property needs to be defined
+	public static $labels = [];
 
 	protected static $visibility = [
 		self::DRAFT			        => true,
@@ -45,9 +48,17 @@ class ProductState extends Enum implements ProductStateContract
 		static::$listStates = explode(',', Cache::get('settings.products.list-states', self::ACTIVE));
 	}
 
-	public static function boot()
+	protected static function boot()
 	{
 		static::$listStates = explode(',', Cache::get('settings.products.list-states', self::ACTIVE));
+
+		static::$labels = [
+			self::DRAFT			=> __('backoffice.product.states.draft'),
+			self::INACTIVE 		=> __('backoffice.product.states.inactive'),
+			self::ACTIVE		=> __('backoffice.product.states.active'),
+			self::UNAVAILABLE 	=> __('backoffice.product.states.unavailable'),
+			self::RETIRED 		=> __('backoffice.product.states.retired'),
+		];
 	}
 
 	public static function choices()
