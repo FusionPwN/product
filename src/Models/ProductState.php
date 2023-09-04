@@ -40,6 +40,7 @@ class ProductState extends Enum implements ProductStateContract
 
 	protected static $activeStates = [self::ACTIVE];
 	protected static $listStates = [];
+	protected static $unListStates = [self::DRAFT,self::INACTIVE,self::RETIRED];
 
 	public function __construct($value = null)
 	{
@@ -87,6 +88,12 @@ class ProductState extends Enum implements ProductStateContract
 	public static function getActiveStates(): array
 	{
 		return static::$activeStates;
+	}
+
+	public static function getUnListableStates(): array
+	{
+		self::boot();
+		return static::$unListStates;
 	}
 
 	/**
