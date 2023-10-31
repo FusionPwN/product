@@ -41,17 +41,20 @@ class ProductState extends Enum implements ProductStateContract
 	protected static $activeStates = [self::ACTIVE];
 	protected static $listStates = [];
 	protected static $unListStates = [self::DRAFT,self::INACTIVE,self::RETIRED];
+	protected static $viewableStates = [];
 
 	public function __construct($value = null)
 	{
 		parent::__construct($value);
 
 		static::$listStates = explode(',', Cache::get('settings.products.list-states', self::ACTIVE));
+		static::$viewableStates = explode(',', Cache::get('settings.products.view-states', self::ACTIVE));
 	}
 
 	protected static function boot()
 	{
 		static::$listStates = explode(',', Cache::get('settings.products.list-states', self::ACTIVE));
+		static::$viewableStates = explode(',', Cache::get('settings.products.view-states', self::ACTIVE));
 
 		static::$labels = [
 			self::DRAFT			=> __('backoffice.product.states.draft'),
@@ -131,5 +134,14 @@ class ProductState extends Enum implements ProductStateContract
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function isViewable(): bool
+	{
+		self::boot();
+		return in_array($this->value, static::$viewableStates);
 	}
 }
