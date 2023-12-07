@@ -127,9 +127,9 @@ class ProductState extends Enum implements ProductStateContract
 		$result = [];
 		$choices = self::choices();
 
-		foreach ($choices as $choice) {
-			if (!in_array($choice, static::$listStates)) {
-				$result[] = $choice;
+		foreach ($choices as $key => $choice) {
+			if (!in_array($key, static::$listStates)) {
+				$result[] = $key;
 			}
 		}
 
