@@ -139,6 +139,15 @@ class ProductState extends Enum implements ProductStateContract
 	/**
 	 * @inheritdoc
 	 */
+	public static function getViewableStates(): array
+	{
+		self::boot();
+		return static::$viewableStates;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
 	public function isViewable(): bool
 	{
 		self::boot();
