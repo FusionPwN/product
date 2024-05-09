@@ -38,6 +38,22 @@ class ProductState extends Enum implements ProductStateContract
 		self::RETIRED 			    => true,
 	];
 
+	protected static $statusClass = [
+		self::DRAFT					=> 'text-secondary',
+		self::INACTIVE 				=> 'text-warning',
+		self::ACTIVE				=> 'text-teal',
+		self::UNAVAILABLE 			=> 'text-orange',
+		self::RETIRED 				=> 'text-danger',
+	];
+
+	protected static $statusIcons = [
+		self::DRAFT					=> 'far fa-question-circle',
+		self::INACTIVE 				=> 'far fa-arrow-alt-circle-right',
+		self::ACTIVE				=> 'far fa-check-circle',
+		self::UNAVAILABLE 			=> 'far fa-dot-circle',
+		self::RETIRED 				=> 'far fa-times-circle',
+	];
+
 	protected static $activeStates = [self::ACTIVE];
 	protected static $listStates = [];
 	protected static $unListStates = [self::DRAFT,self::INACTIVE,self::RETIRED];
@@ -152,5 +168,25 @@ class ProductState extends Enum implements ProductStateContract
 	{
 		self::boot();
 		return in_array($this->value, static::$viewableStates);
+	}
+
+	public function getIcon(): string
+	{
+		return static::$statusIcons[$this->value];
+	}
+
+	public static function getStatusIcon(string $status): string
+	{
+		return self::$statusIcons[$status];
+	}
+
+	public function getClass(): string
+	{
+		return static::$statusClass[$this->value];
+	}
+
+	public static function getStatusClass(string $status): string
+	{
+		return self::$statusClass[$status];
 	}
 }
