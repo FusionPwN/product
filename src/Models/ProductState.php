@@ -81,7 +81,7 @@ class ProductState extends Enum implements ProductStateContract
 		];
 	}
 
-	public static function choices()
+	public static function choices(): array
 	{
 		$result = [];
 		$choices = parent::choices();
