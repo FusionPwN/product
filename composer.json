@@ -16,7 +16,7 @@
     "require": {
         "php": "^8.0|^8.2|^8.4",
         "konekt/concord": "^1.6",
-        "konekt/enum": "^3.0",
+        "konekt/enum": "^3.0|^4.1",
         "cviebrock/eloquent-sluggable": "^9.0|^10.0"
     },
     "require-dev": {
