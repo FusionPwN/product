@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Vanilo\Product\Models;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Konekt\Enum\Enum;
 use Vanilo\Product\Contracts\ProductState as ProductStateContract;
@@ -54,6 +55,22 @@ class ProductState extends Enum implements ProductStateContract
 		self::RETIRED 				=> 'far fa-times-circle',
 	];
 
+	protected static $statusV2Colors = [
+		self::DRAFT         => 'text-zinc-500 dark:text-zinc-400',
+		self::INACTIVE      => 'text-orange-500',
+		self::ACTIVE        => 'text-teal-600',
+		self::UNAVAILABLE   => 'text-red-500',
+		self::RETIRED       => 'text-gray-400',
+	];
+
+	protected static $statusV2Icons = [
+		self::DRAFT					=> 'question-mark-circle',
+		self::INACTIVE 				=> 'pause-circle',
+		self::ACTIVE				=> 'check-circle',
+		self::UNAVAILABLE 			=> 'exclamation-circle',
+		self::RETIRED 				=> 'x-circle',
+	];
+
 	protected static $activeStates = [self::ACTIVE];
 	protected static $listStates = [];
 	protected static $unListStates = [self::DRAFT,self::INACTIVE,self::RETIRED];
@@ -88,6 +105,22 @@ class ProductState extends Enum implements ProductStateContract
 		foreach ($choices as $key => $value) {
 			if (self::$visibility[$key]) {
 				$result[$key] = $value;
+			}
+		}
+		return $result;
+	}
+
+	public static function selfChoices(): array
+	{
+		$result = [];
+		$choices = parent::choices();
+		foreach ($choices as $key => $value) {
+			if (self::$visibility[$key]) {
+				$result[$key] = [
+					'label' => $value,
+					'icon' => self::$statusV2Icons[$key],
+					'color' => self::$statusV2Colors[$key],
+				];
 			}
 		}
 		return $result;
@@ -188,5 +221,100 @@ class ProductState extends Enum implements ProductStateContract
 	public static function getStatusClass(string $status): string
 	{
 		return self::$statusClass[$status];
+	}
+
+	/**
+	 * Get V2 status icons SVG markup.
+	 *
+	 * @return array Full SVG HTML elements ready for output
+	 */
+	public static function getV2IconMarkup(): array
+	{
+		return [
+			'question-mark-circle' => Blade::render('<flux:icon.question-mark-circle class="size-4" />'),
+			'pause-circle' => Blade::render('<flux:icon.pause-circle class="size-4" />'),
+			'check-circle' => Blade::render('<flux:icon.check-circle class="size-4" />'),
+			'exclamation-circle' => Blade::render('<flux:icon.exclamation-circle class="size-4" />'),
+			'x-circle' => Blade::render('<flux:icon.x-circle class="size-4" />'),
+		];
+	}
+
+	/**
+	 * Get V2 status icons for all states.
+	 *
+	 * @return array
+	 */
+	public static function getV2Icons(): array
+	{
+		return self::$statusV2Icons;
+	}
+
+	/**
+	 * Get V2 status icon key for the given state.
+	 *
+	 * @return string
+	 */
+	public function getV2Icon(): string
+	{
+		return self::_getV2Icon($this->value);
+	}
+
+	/**
+	 * Get V2 status icon key for the given state.
+	 *
+	 * @return string
+	 */
+	public static function _getV2Icon(self|string $value): string
+	{
+		if ($value instanceof self) {
+			$value = $value->value();
+		}
+
+		return self::$statusV2Icons[$value];
+	}
+
+	/**
+	 * Get V2 status icon key for the given state.
+	 *
+	 * @return array
+	 */
+	public static function getV2IconKeys(): array
+	{
+		return self::$statusV2Icons;
+	}
+
+	/**
+	 * Get V2 status color for the given state.
+	 *
+	 * @param string|null $status The state value (e.g., 'active', 'draft')
+	 * @return string Tailwind CSS class for text color
+	 */
+	public function getV2Color(): string
+	{
+		return self::_getV2Color($this->value);
+	}
+
+	/**
+	 * Get V2 status icon color for the given state.
+	 *
+	 * @return string
+	 */
+	public static function _getV2Color(self|string $value): string
+	{
+		if ($value instanceof self) {
+			$value = $value->value();
+		}
+
+		return self::$statusV2Colors[$value];
+	}
+
+	/**
+	 * Get V2 status icon key for the given state.
+	 *
+	 * @return array
+	 */
+	public static function getV2IconColors(): array
+	{
+		return self::$statusV2Colors;
 	}
 }
